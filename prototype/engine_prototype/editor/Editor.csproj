@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Platform>x64</Platform>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <ManagedArtefactsPath>../../../artefacts/managed</ManagedArtefactsPath>
+        <NativeArtefactsPath>../../../artefacts/native</NativeArtefactsPath>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <LinkedManagedArtefacts Include = "EngineRuntime">
+            <Visible>false</Visible>
+        </LinkedManagedArtefacts>
+        
+        <LinkedManagedArtefacts Update = "@(LinkedManagedArtefacts)">
+            <ArtefactPath>$(ManagedArtefactsPath)/$(Configuration)/%(LinkedManagedArtefacts.Identity)</ArtefactPath>
+        </LinkedManagedArtefacts>
+        
+        <Reference Include = "@(LinkedManagedArtefacts)">
+            <HintPath>%(ArtefactPath)/%(Identity).dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <LinkedNativeArtefacts Include = "EngineCore">
+            <Visible>false</Visible>
+        </LinkedNativeArtefacts>
+        
+        <LinkedNativeArtefacts Update = "@(LinkedNativeArtefacts)">
+            <ArtefactPath>$(NativeArtefactsPath)/$(Configuration)/%(LinkedNativeArtefacts.Identity)</ArtefactPath>
+        </LinkedNativeArtefacts>
+    </ItemGroup>
+    
+    <Target Name = "CheckArtefacts" BeforeTargets = "ResolveAssemblyReferences">
+        <Error 
+           Condition = "!Exists('%(LinkedManagedArtefacts.ArtefactPath)')" 
+           Text = "Unable to find required managed artefact. Please build the artefact named %(LinkedManagedArtefacts.Identity)."
+        />
+        
+        <Error
+            Condition = "!Exists('%(LinkedNativeArtefacts.ArtefactPath)')"
+            Text = "Unable to find required native artefact. Please build the artefact named %(LinkedNativeArtefacts.Identity)."
+        />
+    </Target>
+    
+    <Target Name = "CopyArtefacts" AfterTargets = "Build">
+        <ItemGroup>
+            <LinkedNativeArtefactsPath Include = "%(LinkedNativeArtefacts.ArtefactPath)/*.*"/>
+        </ItemGroup>
+
+        <Copy
+            SourceFiles = "%(LinkedNativeArtefactsPath.Identity)"
+            DestinationFolder = "$(OutDir)"
+            SkipUnchangedFiles = "true"
+        />
+    </Target>
+</Project>

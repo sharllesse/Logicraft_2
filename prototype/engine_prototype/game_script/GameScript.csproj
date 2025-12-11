@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <PlatformTarget>x64</PlatformTarget>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <LinkedManagedArtefacts Include = "EngineRuntime">
+            <Visible>false</Visible>
+        </LinkedManagedArtefacts>
+
+        <LinkedManagedArtefacts Update = "@(LinkedManagedArtefacts)">
+            <ArtefactPath>../../../artefacts/managed/$(Configuration)/%(LinkedManagedArtefacts.Identity)</ArtefactPath>
+        </LinkedManagedArtefacts>
+        
+        <Reference Include = "@(LinkedManagedArtefacts)">
+            <HintPath>%(ArtefactPath)/%(Identity).dll</HintPath>
+        </Reference>
+        
+        <Compile Include = "../Editor_Build/**/*.cs"/>
+    </ItemGroup>
+        
+    <Target Name = "CheckArterfacts" BeforeTargets = "ResolveAssemblyReferences">
+        <Error 
+            Condition = "!Exists('%(LinkedManagedArtefacts.ArtefactPath)')" 
+            Text = "Unable to find required managed artefact. Please build the artefact named %(LinkedManagedArtefacts.Identity)."
+        />
+    </Target>
+    
+    <Target Name="CopyArtefacts" AfterTargets="Build">
+        <Copy
+            SourceFiles="$(TargetPath)"
+            DestinationFolder="../../../artefacts/managed/$(Configuration)/$(MSBuildProjectName)"
+            SkipUnchangedFiles="true"
+        />
+    </Target>
+</Project>

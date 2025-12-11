@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PlatformTarget>x64</PlatformTarget>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <Target Name="ExportSelfToArtefacts" AfterTargets="Build">
+        <Copy 
+            SourceFiles="$(TargetPath)" 
+            DestinationFolder="../../../artefacts/managed/$(Configuration)/$(MSBuildProjectName)" 
+            SkipUnchangedFiles="true"/>
+    </Target>
+</Project>
