@@ -1,5 +1,7 @@
 # Logicraft 2
 
+A personal deep-dive into game engine architecture, bridging Native C# and C++ to implement features I've wanted to learn.
+
 > [!IMPORTANT]
 > This is a personal learning sandbox. Being a student, I've worked on many group, solo, or obscure projects where I've been implementing many features.
 > 
