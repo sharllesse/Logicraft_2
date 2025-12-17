@@ -44,6 +44,15 @@ void game_object::start()
 
 void game_object::update()
 {
+    //FIXME : It will cause a deadlock if another component calls add_component.
+    //But for this prototype, I use add_component in another thread.
+    //And it will do the same thing with the game object manager anyway.
+
+    //TODO : I need to fix all of that with a delayed destroy/creation to avoid deadlock but keep the thread safety.
+    //This fix can be seen more as a bandage than anything.
+    //This prototype was more about an HotReload and not component and game object.
+    //Later i will think about a better structure with object like unity does.
+
     std::shared_lock lock(m_game_object_mtx);
 
     for (uptr_component_t& component: m_components)
